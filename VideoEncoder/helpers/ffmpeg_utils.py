@@ -29,7 +29,7 @@ def get_codec(filepath, channel="v:0"):
 
 def encode(filepath):
     basefilepath = os.path.splitext(filepath)[0]
-    output_filepath = basefilepath + " AVC" + ".mp4"
+    output_filepath = basefilepath + ".HEVC" + ".mkv"
     assert output_filepath != filepath
     if os.path.isfile(output_filepath):
         logging.info('Skipping "{}": file already exists'.format(output_filepath))
@@ -41,23 +41,21 @@ def encode(filepath):
         logging.info("Skipping: no video codec reported")
         return None
     # Video transcode options
-    if video_codec[0] == "hevc":
-        if video_codec[1] == "hvc1":
+    if video_codec[0] == "":
+        if video_codec[1] == "":
             logging.info("Skipping: already h265 / hvc1")
             return None
         else:
             # Copy stream to hvc1
-            video_opts = "-c:v copy -tag:v avc1"
+            video_opts = "-c:v copy -tag:v hvc1"
     else:
         # video option to h265 / hvc1
         codec_opts = "-c:v libx264"
-        profile_opts = "-profile:v high"
-        tag_opts =  "-tag:v avc1"
-        tune_opts = "-tune animation"
-        lvl_opts = "-level 3.1"
-        crf_opts = "-crf 24"
-        preset_opts = "-preset slow"
-        Resolution_opts = "-vf  scale=1280:720"
+        profile_opts = "-profile:v main10"
+        tag_opts =  "-tag:v hvc1
+        crf_opts = "-crf 28"
+        preset_opts = "-preset medium"
+        Resolution_opts = "-vf  scale=1920:1080"
         core_opts = "-threads 8"
         audio_opts = "-c:a aac -b:a 128k"
     call(
@@ -106,4 +104,4 @@ def get_width_height(filepath):
     if metadata.has("width") and metadata.has("height"):
         return metadata.get("width"), metadata.get("height")
     else:
-        return 1280, 720
+        return 1920, 1080
